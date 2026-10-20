@@ -1,0 +1,61 @@
+# ==============================================================================
+# Git Ignore - Monorepo E-Library UNIRA (Kelompok 05)
+# Backend (Express + Prisma), Web (Svelte 5), Mobile (Flutter 3.x)
+# ==============================================================================
+
+.env
+.env.*
+!.env.example
+*.env
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node.js & Dependencies
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build Outputs & Bundles
+dist/
+build/
+coverage/
+.svelte-kit/
+
+# Flutter & Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+android/.gradle
+android/captures/
+ios/.symlinks/
+*.lock
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Git Automation Bot (JANGAN DI-COMMIT KE GIT)
+git-history-bot.js
+*.bot.js
+scripts/
+
+# Temporary & Scratch Files
+library.rar
+scraped_site.html
+.agents/
+skills-lock.json
+*.tmp
+*.rar
+*.zip
