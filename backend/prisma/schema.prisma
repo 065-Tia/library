@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PETUGAS
+  USER
+}
+
+enum StatusPeminjaman {
+  PENDING
+  DISETUJUI
+  DIPINJAM
+  DIKEMBALIKAN
+  DITOLAK
+}
+
+enum StatusAntrean {
+  MENUNGGU
+  TERSEDIA
+  DIBATALKAN
+  SELESAI
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  nim          String       @unique
+  nama         String
+  email        String       @unique
+  password     String
+  role         Role         @default(USER)
+  noTelepon    String?
+  alamat       String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  peminjaman   Peminjaman[]
+  antrean      Antrean[]
+
+  @@map("users")
+}
+
+model Kategori {
+  id        Int      @id @default(autoincrement())
+  nama      String   @unique
+  deskripsi String?
+  buku      Buku[]
+
+  @@map("kategori")
+}
+
+model Buku {
+  id          Int          @id @default(autoincrement())
+  isbn        String       @unique
+  judul       String
+  penulis     String
+  penerbit    String
+  tahunTerbit Int
+  stok        Int          @default(1)
+  deskripsi   String?      @db.Text
+  coverUrl    String?      @db.Text
+  isDigital   Boolean      @default(false)
+  fileUrl     String?      @db.Text
+  kategoriId  Int
+  kategori    Kategori     @relation(fields: [kategoriId], references: [id], onDelete: Restrict)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  peminjaman  Peminjaman[]
+  antrean     Antrean[]
+
+  @@index([kategoriId])
+  @@index([judul])
+  @@map("buku")
+}
+
+model Peminjaman {
+  id             Int              @id @default(autoincrement())
+  userId         Int
+  bukuId         Int
+  tanggalPinjam  DateTime         @default(now())
+  batasKembali   DateTime
+  tanggalKembali DateTime?
+  status         StatusPeminjaman @default(PENDING)
+  denda          Int              @default(0)
+  isDendaLunas   Boolean          @default(true)
+  catatan        String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  buku           Buku             @relation(fields: [bukuId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+  @@index([bukuId, status])
+  @@index([status])
+  @@map("peminjaman")
+}
+
+model Antrean {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  bukuId    Int
+  antreanKe Int           @default(1)
+  status    StatusAntrean @default(MENUNGGU)
+  createdAt DateTime      @default(now())
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buku      Buku          @relation(fields: [bukuId], references: [id], onDelete: Cascade)
+
+  @@index([bukuId, status])
+  @@index([userId, status])
+  @@map("antrean")
+}
